@@ -22,6 +22,7 @@ on:
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
+  FEEDS_CONF: lede/feeds.conf.default
   CONFIG_FILE: lede/Build-arm.config
   DIY_P1_SH: lede/diy-part1.sh
   DIY_P2_SH: lede/diy-arm.sh
@@ -204,6 +205,7 @@ jobs:
     env:
       REPO_URL: https://github.com/coolsnowwolf/lede
       REPO_BRANCH: master
+      FEEDS_CONF: lede/feeds.conf.default
       CONFIG_FILE: lede/Build-x86.config
       DIY_P1_SH: lede/diy-part1.sh
       DIY_P2_SH: lede/diy-x86.sh
@@ -363,6 +365,7 @@ jobs:
     env:
       REPO_URL: https://github.com/immortalwrt/immortalwrt
       REPO_BRANCH: openwrt-23.05
+      FEEDS_CONF: immortalwrt/feeds.conf.default
       CONFIG_FILE: immortalwrt/Build-x86.config
       DIY_P1_SH: immortalwrt/diy-part1.sh
       DIY_P2_SH: immortalwrt/diy-x86.sh
@@ -522,6 +525,7 @@ jobs:
     env:
       REPO_URL: https://github.com/openwrt/openwrt
       REPO_BRANCH: openwrt-23.05
+      FEEDS_CONF: original/feeds.conf.default
       CONFIG_FILE: original/Build-x86.config
       DIY_P1_SH: original/diy-part1.sh
       DIY_P2_SH: original/diy-x86.sh
