@@ -623,11 +623,10 @@ jobs:
     needs: [ARMv8-lede, x86-lede, x86-immortalwrt, x86-original]
     
     steps:
-
       - name: Delete workflow runs
         uses: Mattraks/delete-workflow-runs@main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
-          retain_days: 1
-          keep_minimum_runs: 1
+          retain_days: 0
+          keep_minimum_runs: 0
