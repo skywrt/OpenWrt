@@ -56,9 +56,7 @@ jobs:
       CONFIG_FILE: lede/Build-arm.config
       DIY_P1_SH: lede/diy-part1.sh
       DIY_P2_SH: lede/diy-arm.sh
-      UPLOAD_BIN_DIR: false
-      UPLOAD_FIRMWARE: false
-      UPLOAD_RELEASE: false
+      UPLOAD_RELEASE: true
 
     steps:
     - name: Checkout
@@ -214,9 +212,7 @@ jobs:
       CONFIG_FILE: lede/Build-x86.config
       DIY_P1_SH: lede/diy-part1.sh
       DIY_P2_SH: lede/diy-x86.sh
-      UPLOAD_BIN_DIR: false
-      UPLOAD_FIRMWARE: false
-      UPLOAD_RELEASE: false
+      UPLOAD_RELEASE: true
 
     steps:
     - name: Checkout
@@ -353,9 +349,7 @@ jobs:
       CONFIG_FILE: immortalwrt/Build-x86.config
       DIY_P1_SH: immortalwrt/diy-part1.sh
       DIY_P2_SH: immortalwrt/diy-x86.sh
-      UPLOAD_BIN_DIR: false
-      UPLOAD_FIRMWARE: false
-      UPLOAD_RELEASE: false
+      UPLOAD_RELEASE: true
 
     steps:
     - name: Checkout
@@ -492,9 +486,7 @@ jobs:
       CONFIG_FILE: original/Build-x86.config
       DIY_P1_SH: original/diy-part1.sh
       DIY_P2_SH: original/diy-x86.sh
-      UPLOAD_BIN_DIR: false
-      UPLOAD_FIRMWARE: false
-      UPLOAD_RELEASE: false
+      UPLOAD_RELEASE: true
 
     steps:
     - name: Checkout
