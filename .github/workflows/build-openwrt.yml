@@ -329,6 +329,7 @@ jobs:
         cd ./openwrt/bin
         mkdir -p ./firmware
         rm -rf $(find ../bin/targets/ -name "packages" -o -name "*.buildinfo" -o -name "sha256sums" -o -name "*.manifest")
+        cp -rf $(find ../bin/targets/ -type f) ./firmware/
 
     - name: Deliver firmware
       uses: actions/upload-artifact@v3
@@ -482,6 +483,7 @@ jobs:
         cd ./openwrt/bin
         mkdir -p ./firmware
         rm -rf $(find ../bin/targets/ -name "packages" -o -name "*.buildinfo" -o -name "sha256sums" -o -name "*.manifest")
+        cp -rf $(find ../bin/targets/ -type f) ./firmware/
 
     - name: Deliver firmware
       uses: actions/upload-artifact@v3
@@ -635,6 +637,7 @@ jobs:
         cd ./openwrt/bin
         mkdir -p ./firmware
         rm -rf $(find ../bin/targets/ -name "packages" -o -name "*.buildinfo" -o -name "sha256sums" -o -name "*.manifest")
+        cp -rf $(find ../bin/targets/ -type f) ./firmware/
 
     - name: Deliver firmware
       uses: actions/upload-artifact@v3
