@@ -181,16 +181,16 @@ jobs:
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload OpenWrt Firmware to Release
-      id: release
+      if: env.PACKAGED_STATUS == 'success' && env.UPLOAD_RELEASE == 'true'
       uses: ncipollo/release-action@v1
       with:
         name: ARMv8-lede ${{ env.DATE }}
         tag: ARMv8-lede
-        artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
         allowUpdates: true
         removeArtifacts: true
         commit: main
         token: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
         body: |
           * 这是 ARMv8 平台精简固件
           * Default IP: 192.168.1.1
@@ -328,11 +328,11 @@ jobs:
       with:
         name: x86-lede ${{ env.PRODUCT_NAME }}${{ env.DATE }}
         tag: x86-lede
-        artifacts: ${{ env.FIRMWARE }}/*
         allowUpdates: true
         removeArtifacts: true
         commit: main
         token: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: ${{ env.FIRMWARE }}/*
         body: |
           * 这是 x86 平台精简固件
           * Default IP: 192.168.1.1
@@ -470,11 +470,11 @@ jobs:
       with:
         name: x86-immortalwrt ${{ env.PRODUCT_NAME }}${{ env.DATE }}
         tag: x86-immortalwrt
-        artifacts: ${{ env.FIRMWARE }}/*
         allowUpdates: true
         removeArtifacts: true
         commit: main
         token: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: ${{ env.FIRMWARE }}/*
         body: |
           * 这是 x86-immortalwrt 精简固件
           * Default IP: 192.168.1.1
@@ -612,11 +612,11 @@ jobs:
       with:
         name: x86-Original ${{ env.PRODUCT_NAME }}${{ env.DATE }}
         tag: x86-Original
-        artifacts: ${{ env.FIRMWARE }}/*
         allowUpdates: true
         removeArtifacts: true
         commit: main
         token: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: ${{ env.FIRMWARE }}/*
         body: |
           * 这是 x86-original 精简固件
           * Default IP: 192.168.1.1
