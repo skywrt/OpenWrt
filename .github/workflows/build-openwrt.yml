@@ -42,7 +42,8 @@ jobs:
     - name: Source Code Update notification
       if: steps.cacheHash.outputs.cache-hit != 'true'
       run: |
-        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=${{ env.FILE_NAME }}lede源码更新了" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
+        Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
+        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} lede源码更新了 ${Emoji[$[$RANDOM % ${#Emoji[@]}]]}" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
 
   ARMv8-lede:
     needs: [check]
@@ -68,7 +69,8 @@ jobs:
         cat /proc/cpuinfo | grep "cpu cores" | uniq >> CPU
         sed -i 's|[[:space:]]||g; s|^.||' CPU && sed -i 's|CPU||g; s|pucores:||' CPU
         CPUNAME="$(awk 'NR==1' CPU)" && CPUCORES="$(awk 'NR==2' CPU)"
-        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=ARMv8-lede 正在使用 [${CPUNAME} CPU]  [${CPUCORES} 核心]  [lede] 源码 编译固件,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
+        Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
+        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} ARMv8-lede 正在使用 [${CPUNAME} CPU]  [${CPUCORES} 核心]  [lede] 源码 编译固件,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
     - name: Initialization environment
       env:
@@ -196,6 +198,7 @@ jobs:
         MSG="
         编译时间：${{ env.DATE }}
         ARMv8-lede 编译完成
+        ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY ${Emoji[$[$RANDOM % ${#Emoji[@]}]]}
         "
         curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
@@ -224,7 +227,8 @@ jobs:
         cat /proc/cpuinfo | grep "cpu cores" | uniq >> CPU
         sed -i 's|[[:space:]]||g; s|^.||' CPU && sed -i 's|CPU||g; s|pucores:||' CPU
         CPUNAME="$(awk 'NR==1' CPU)" && CPUCORES="$(awk 'NR==2' CPU)"
-        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=x86-lede 正在使用 [${CPUNAME} CPU]  [${CPUCORES} 核心] [lede] 源码 编译固件,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
+        Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
+        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} x86-lede 正在使用 [${CPUNAME} CPU]  [${CPUCORES} 核心] [lede] 源码 编译固件,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
     - name: Initialization environment
       env:
@@ -333,6 +337,7 @@ jobs:
         MSG="
         编译时间：${{ env.DATE }}
         x86-lede 编译完成
+        ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY ${Emoji[$[$RANDOM % ${#Emoji[@]}]]}
         "
         curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
@@ -361,7 +366,8 @@ jobs:
         cat /proc/cpuinfo | grep "cpu cores" | uniq >> CPU
         sed -i 's|[[:space:]]||g; s|^.||' CPU && sed -i 's|CPU||g; s|pucores:||' CPU
         CPUNAME="$(awk 'NR==1' CPU)" && CPUCORES="$(awk 'NR==2' CPU)"
-        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=x86-immortalwrt 正在使用 [${CPUNAME} CPU]  [${CPUCORES} 核心]  [immortalwrt] 源码 编译固件中,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
+        Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
+        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} x86-immortalwrt 正在使用 [${CPUNAME} CPU]  [${CPUCORES} 核心]  [immortalwrt] 源码 编译固件中,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
     - name: Initialization environment
       env:
@@ -470,6 +476,7 @@ jobs:
         MSG="
         编译时间：${{ env.DATE }}
         x86-immortalwrt 编译完成
+        ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY ${Emoji[$[$RANDOM % ${#Emoji[@]}]]}
         "
         curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
@@ -498,7 +505,8 @@ jobs:
         cat /proc/cpuinfo | grep "cpu cores" | uniq >> CPU
         sed -i 's|[[:space:]]||g; s|^.||' CPU && sed -i 's|CPU||g; s|pucores:||' CPU
         CPUNAME="$(awk 'NR==1' CPU)" && CPUCORES="$(awk 'NR==2' CPU)"
-        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=x86-original 正在使用 [${CPUNAME} CPU]  [${CPUCORES} 核心]  [openwrt] 源码 编译固件中,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
+        Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
+        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} x86-original 正在使用 [${CPUNAME} CPU]  [${CPUCORES} 核心]  [openwrt] 源码 编译固件中,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
     - name: Initialization environment
       env:
@@ -607,6 +615,7 @@ jobs:
         MSG="
         编译时间：${{ env.DATE }}
         x86 original编译完成
+        ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY ${Emoji[$[$RANDOM % ${#Emoji[@]}]]}
         "
         curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
