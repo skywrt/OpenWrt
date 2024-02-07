@@ -13,9 +13,9 @@ env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   FEEDS_CONF: lede/feeds.conf.default
-  CONFIG_FILE: lede/Build-x86.config
+  CONFIG_FILE: lede/Build-arm.config
   DIY_P1_SH: lede/diy-part1.sh
-  DIY_P2_SH: lede/diy-x86.sh
+  DIY_P2_SH: lede/diy-arm.sh
   UPLOAD_FIRMWARE: true
   CONFIG: x86
   
