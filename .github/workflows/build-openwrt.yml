@@ -120,7 +120,6 @@ jobs:
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
         echo "DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
-        echo "TAG_DATE=$(date +"%m%d-%H%M%S")" >> $GITHUB_ENV
 
     - name: Check space usage
       if: (!cancelled())
@@ -179,7 +178,7 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         name: ARMv8-lede ${{ env.DATE }}
-        tag: ${{ env.TAG_DATE }}
+        tag: ARMv8-lede
         artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
         allowUpdates: true
         removeArtifacts: true
@@ -298,7 +297,6 @@ jobs:
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
         echo "DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
-        echo "TAG_DATE=$(date +"%m%d-%H%M%S")" >> $GITHUB_ENV
 
     - name: Check space usage
       if: (!cancelled())
@@ -339,7 +337,7 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         name: x86-lede ${{ env.PRODUCT_NAME }}${{ env.DATE }}
-        tag: ${{ env.TAG_DATE }}
+        tag: x86-lede
         artifacts: ${{ env.FIRMWARE }}/*
         allowUpdates: true
         removeArtifacts: true
@@ -458,7 +456,6 @@ jobs:
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
         echo "DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
-        echo "TAG_DATE=$(date +"%m%d-%H%M%S")" >> $GITHUB_ENV
 
     - name: Check space usage
       if: (!cancelled())
@@ -499,7 +496,7 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         name: x86-immortalwrt ${{ env.PRODUCT_NAME }}${{ env.DATE }}
-        tag: ${{ env.TAG_DATE }}
+        tag: x86-immortalwrt
         artifacts: ${{ env.FIRMWARE }}/*
         allowUpdates: true
         removeArtifacts: true
@@ -618,7 +615,6 @@ jobs:
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
         echo "DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
-        echo "TAG_DATE=$(date +"%m%d-%H%M%S")" >> $GITHUB_ENV
 
     - name: Check space usage
       if: (!cancelled())
@@ -659,7 +655,7 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         name: x86-Original ${{ env.PRODUCT_NAME }}${{ env.DATE }}
-        tag: ${{ env.TAG_DATE }}
+        tag: x86-Original
         artifacts: ${{ env.FIRMWARE }}/*
         allowUpdates: true
         removeArtifacts: true
@@ -691,12 +687,3 @@ jobs:
           repository: ${{ github.repository }}
           retain_days: 1
           keep_minimum_runs: 1
-          
-      - name: Remove old Releases
-        uses: dev-drprasad/delete-older-releases@master
-        with:
-          repo: ${{ github.repository }}
-          keep_latest: 10
-          delete_tags: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
