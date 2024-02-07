@@ -31,4 +31,5 @@ jobs:
     - name: Source Code Update notification
       if: steps.cacheHash.outputs.cache-hit != 'true'
       run: |
-        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=($GITHUB_REPOSITORY) lede源码更新了" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
+        Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
+        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY 温馨提示 ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} lede源码更新了 ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} " "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
