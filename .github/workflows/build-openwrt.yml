@@ -1,35 +1,64 @@
 #
-# Copyright (c) 2019-2020 P3TERX <https://p3terx.com>
+# Copyright (c) 2019-2021 P3TERX <https://p3terx.com>
 #
 # This is free software, licensed under the MIT License.
 # See /LICENSE for more information.
 #
 # https://github.com/P3TERX/Actions-OpenWrt
-# Description: Build OpenWrt using GitHub Actions
+# File: .github/workflows/update-checker.yml
+# Description: Source code update checker
 #
 
 name: Build OpenWrt
 
-on:
-  repository_dispatch:
-  workflow_dispatch:
-  
-
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
-  FEEDS_CONF: lede/feeds.conf.default
-  CONFIG_FILE: lede/Build-arm.config
-  DIY_P1_SH: lede/diy-part1.sh
-  DIY_P2_SH: lede/diy-arm.sh
-  UPLOAD_BIN_DIR: false
-  UPLOAD_FIRMWARE: false
-  UPLOAD_RELEASE: false
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: 0 16 * * *
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+    
+    - name: Get Commit Hash
+      id: getHash
+      run: |
+        git clone --depth 1 $REPO_URL -b $REPO_BRANCH .
+        echo "commitHash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+    - name: Trigger build
+      if: steps.cacheHash.outputs.cache-hit != 'true'
+      uses: peter-evans/repository-dispatch@v3
+      with:
+        token: ${{ secrets.ACTIONS_TRIGGER_PAT }}
+        event-type: lede Source Code Update
+
+    - name: Source Code Update notification
+      if: steps.cacheHash.outputs.cache-hit != 'true'
+      run: |
+        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=${{ env.FILE_NAME }}lede源码更新了" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
+
   ARMv8-lede:
+    needs: [check]
+    if: ${{ needs.Checka.outputs.output != 'hello'}}
     name: ARMv8-lede
     runs-on: ubuntu-22.04
+    env:
+      REPO_URL: https://github.com/coolsnowwolf/lede
+      REPO_BRANCH: master
+      FEEDS_CONF: lede/feeds.conf.default
+      CONFIG_FILE: lede/Build-arm.config
+      DIY_P1_SH: lede/diy-part1.sh
+      DIY_P2_SH: lede/diy-arm.sh
+      UPLOAD_BIN_DIR: false
+      UPLOAD_FIRMWARE: false
+      UPLOAD_RELEASE: false
 
     steps:
     - name: Checkout
@@ -41,7 +70,7 @@ jobs:
         cat /proc/cpuinfo | grep "cpu cores" | uniq >> CPU
         sed -i 's|[[:space:]]||g; s|^.||' CPU && sed -i 's|CPU||g; s|pucores:||' CPU
         CPUNAME="$(awk 'NR==1' CPU)" && CPUCORES="$(awk 'NR==2' CPU)"
-        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=ARMv8 正在使用 [${CPUNAME} CPU]  [${CPUCORES} 核心]  [lede] 源码 编译固件,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
+        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=ARMv8-lede 正在使用 [${CPUNAME} CPU]  [${CPUCORES} 核心]  [lede] 源码 编译固件,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
     - name: Initialization environment
       env:
@@ -121,54 +150,33 @@ jobs:
       if: (!cancelled())
       run: df -hT
 
-    - name: Prepare artifact
-      run: |
-        cd ./openwrt/bin
-        mkdir -p ./firmware
-        mkdir -p ./package
-        rm -rf $(find ../bin/targets/ -name "packages" -o -name "*.buildinfo" -o -name "sha256sums" -o -name "*.manifest")
-        cp -rf $(find ../bin/targets/ -type f) ./firmware/
-        cp -rf $(find ../bin/packages/ -type f -name "*.ipk") ./package/
-        cd ./package
-        tar -zcvf IPK.tar.gz *
-        mv -f IPK.tar.gz ../
-
-    - name: Deliver package
-      uses: actions/upload-artifact@v3
-      with:
-        name: ARMv8_IPK ${{ env.FILE_DATE }}
-        path: ./openwrt/bin/package/
-
-    - name: Deliver firmware
-      uses: actions/upload-artifact@v3
-      with:
-        name: ARMv8_firmware ${{ env.FILE_DATE }}
-        path: ./openwrt/bin/firmware/
-
     - name: Organize files
       id: organize
+      if: steps.compile.outputs.status == 'success'
       run: |
-        cd openwrt
+        cd $GITHUB_WORKSPACE/openwrt/bin/packages
+        tar -zcvf Packages.tar.gz ./*
+        cp Packages.tar.gz $GITHUB_WORKSPACE/openwrt/bin/targets/*/*
+        cd $GITHUB_WORKSPACE/openwrt/bin/targets/*/*
+        rm -rf Packages.tar.gz feeds.buildinfo openwrt-armvirt-64-generic-kernel.bin openwrt-armvirt-64-generic.manifest sha256sums version.buildinfo
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "{status}={success}" >> $GITHUB_OUTPUT
+        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Package Armvirt as OpenWrt
       uses: ophub/flippy-openwrt-actions@main
       env:
         OPENWRT_ARMVIRT: openwrt/bin/targets/*/*/*.tar.gz
-        PACKAGE_SOC: s905d
+        PACKAGE_SOC: all
         KERNEL_AUTO_LATEST:  true
         KERNEL_VERSION_NAME: 5.15.85_6.1.1
         WHOAMI: skywrt
 
-    - name: copy update files
+    - name: Organize
       run: |
-        cd /opt/openwrt_packit
-        cp ./files/update*.sh ./output/
-        rm -rf $(find ./output/ -name "sha256sums" -o -name "*.gz.sha" -o -name "*.tar.gz")
-        cd $GITHUB_WORKSPACE/openwrt/bin
-        cp IPK.tar.gz /opt/openwrt_packit/output/
-        echo "{status}={success}" >> $GITHUB_OUTPUT
+        cd /opt/openwrt_packit/output
+        rm -rf openwrt-armvirt-64-generic-rootfs.tar.gz *.sha
+        echo "PACKAGED_OUTPUTPATH=$PWD" >> $GITHUB_ENV
+        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload OpenWrt Firmware to Release
       uses: ncipollo/release-action@v1
@@ -189,12 +197,14 @@ jobs:
       run: |
         MSG="
         编译时间：${{ env.DATE }}
-        ARMv8 编译完成
+        ARMv8-lede 编译完成
         "
         curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
 
   x86-lede:
+    needs: [check]
+    if: ${{ needs.Checka.outputs.output != 'hello'}}
     name: x86-lede
     runs-on: ubuntu-22.04
     env:
@@ -218,7 +228,7 @@ jobs:
         cat /proc/cpuinfo | grep "cpu cores" | uniq >> CPU
         sed -i 's|[[:space:]]||g; s|^.||' CPU && sed -i 's|CPU||g; s|pucores:||' CPU
         CPUNAME="$(awk 'NR==1' CPU)" && CPUCORES="$(awk 'NR==2' CPU)"
-        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=x86 正在使用 [${CPUNAME} CPU]  [${CPUCORES} 核心] [lede] 源码 编译固件,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
+        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=x86-lede 正在使用 [${CPUNAME} CPU]  [${CPUCORES} 核心] [lede] 源码 编译固件,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
     - name: Initialization environment
       env:
@@ -298,36 +308,14 @@ jobs:
       if: (!cancelled())
       run: df -hT
 
-    - name: Prepare artifact
-      run: |
-        cd ./openwrt/bin
-        mkdir -p ./firmware
-        mkdir -p ./package
-        rm -rf $(find ../bin/targets/ -name "packages" -o -name "*.buildinfo" -o -name "sha256sums" -o -name "*.manifest")
-        cp -rf $(find ../bin/targets/ -type f -name "*combined*") ./firmware/
-        cp -rf $(find ../bin/packages/ -type f -name "*.ipk") ./package/
-        cd ./package
-        tar -zcvf IPK.tar.gz *
-        mv -f IPK.tar.gz ../firmware/
-
-    - name: Deliver package
-      uses: actions/upload-artifact@v3
-      with:
-        name: lede_IPK ${{ env.FILE_DATE }}
-        path: ./openwrt/bin/package/
-
-    - name: Deliver firmware
-      uses: actions/upload-artifact@v3
-      with:
-        name: lede_firmware ${{ env.FILE_DATE }}
-        path: ./openwrt/bin/firmware/
-
     - name: Organize files
       id: organize
+      if: steps.compile.outputs.status == 'success'
       run: |
-        cd openwrt/bin/firmware/
+        cd openwrt/bin/targets/*/*
+        rm -rf packages *.buildinfo openwrt-x86-64-generic-kernel.bin openwrt-x86-64-generic-squashfs-rootfs.img.gz openwrt-x86-64-generic.manifest profiles.json sha256sums
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "{status}={success}" >> $GITHUB_OUTPUT
+        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload OpenWrt Firmware to Release
       uses: ncipollo/release-action@v1
@@ -348,12 +336,14 @@ jobs:
       run: |
         MSG="
         编译时间：${{ env.DATE }}
-        x86 编译完成
+        x86-lede 编译完成
         "
         curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
 
   x86-immortalwrt:
+    needs: [check]
+    if: ${{ needs.Checka.outputs.output != 'hello'}}
     name: x86-immortalwrt
     runs-on: ubuntu-22.04
     env:
@@ -377,7 +367,7 @@ jobs:
         cat /proc/cpuinfo | grep "cpu cores" | uniq >> CPU
         sed -i 's|[[:space:]]||g; s|^.||' CPU && sed -i 's|CPU||g; s|pucores:||' CPU
         CPUNAME="$(awk 'NR==1' CPU)" && CPUCORES="$(awk 'NR==2' CPU)"
-        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=x86-docker 正在使用 [${CPUNAME} CPU]  [${CPUCORES} 核心]  [lede] 源码 编译固件中,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
+        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=x86-immortalwrt 正在使用 [${CPUNAME} CPU]  [${CPUCORES} 核心]  [immortalwrt] 源码 编译固件中,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
     - name: Initialization environment
       env:
@@ -457,36 +447,14 @@ jobs:
       if: (!cancelled())
       run: df -hT
 
-    - name: Prepare artifact
-      run: |
-        cd ./openwrt/bin
-        mkdir -p ./firmware
-        mkdir -p ./package
-        rm -rf $(find ../bin/targets/ -name "packages" -o -name "*.buildinfo" -o -name "sha256sums" -o -name "*.manifest")
-        cp -rf $(find ../bin/targets/ -type f -name "*combined*") ./firmware/
-        cp -rf $(find ../bin/packages/ -type f -name "*.ipk") ./package/
-        cd ./package
-        tar -zcvf IPK.tar.gz *
-        mv -f IPK.tar.gz ../firmware/
-
-    - name: Deliver package
-      uses: actions/upload-artifact@v3
-      with:
-        name: immortalwrt_IPK ${{ env.FILE_DATE }}
-        path: ./openwrt/bin/package/
-
-    - name: Deliver firmware
-      uses: actions/upload-artifact@v3
-      with:
-        name: immortalwrt_firmware ${{ env.FILE_DATE }}
-        path: ./openwrt/bin/firmware/
-
     - name: Organize files
       id: organize
+      if: steps.compile.outputs.status == 'success'
       run: |
-        cd openwrt/bin/firmware/
+        cd openwrt/bin/targets/*/*
+        rm -rf packages *.buildinfo openwrt-x86-64-generic-kernel.bin openwrt-x86-64-generic-squashfs-rootfs.img.gz openwrt-x86-64-generic.manifest profiles.json sha256sums
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "{status}={success}" >> $GITHUB_OUTPUT
+        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload OpenWrt Firmware to Release
       uses: ncipollo/release-action@v1
@@ -507,12 +475,14 @@ jobs:
       run: |
         MSG="
         编译时间：${{ env.DATE }}
-        x86 Docker 编译完成
+        x86-immortalwrt 编译完成
         "
         curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
 
   x86-original:
+    needs: [check]
+    if: ${{ needs.Checka.outputs.output != 'hello'}}
     name: x86-original
     runs-on: ubuntu-22.04
     env:
@@ -616,36 +586,14 @@ jobs:
       if: (!cancelled())
       run: df -hT
 
-    - name: Prepare artifact
-      run: |
-        cd ./openwrt/bin
-        mkdir -p ./firmware
-        mkdir -p ./package
-        rm -rf $(find ../bin/targets/ -name "packages" -o -name "*.buildinfo" -o -name "sha256sums" -o -name "*.manifest" -o -name "profiles.json")
-        cp -rf $(find ../bin/targets/ -type f -name "*combined*") ./firmware/
-        cp -rf $(find ../bin/packages/ -type f -name "*.ipk") ./package/
-        cd ./package
-        tar -zcvf IPK.tar.gz *
-        mv -f IPK.tar.gz ../firmware/
-
-    - name: Deliver package
-      uses: actions/upload-artifact@v3
-      with:
-        name: Original_IPK ${{ env.FILE_DATE }}
-        path: ./openwrt/bin/package/
-
-    - name: Deliver firmware
-      uses: actions/upload-artifact@v3
-      with:
-        name: Original_firmware ${{ env.FILE_DATE }}
-        path: ./openwrt/bin/firmware/
-
     - name: Organize files
       id: organize
+      if: steps.compile.outputs.status == 'success'
       run: |
-        cd openwrt/bin/firmware/
+        cd openwrt/bin/targets/*/*
+        rm -rf packages *.buildinfo openwrt-x86-64-generic-kernel.bin openwrt-x86-64-generic-squashfs-rootfs.img.gz openwrt-x86-64-generic.manifest profiles.json sha256sums
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "{status}={success}" >> $GITHUB_OUTPUT
+        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload OpenWrt Firmware to Release
       uses: ncipollo/release-action@v1
