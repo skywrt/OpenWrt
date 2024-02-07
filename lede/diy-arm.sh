@@ -31,7 +31,7 @@ sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci-n
 # Hostname
 sed -i 's/OpenWrt/Phicomm-N1/g' package/base-files/files/bin/config_generate
 
-sed -i 's/os.date()/os.date("%Y年%m月%d日")/g' package/lean/autocore/files/arm/index.htm
+sed -i 's/os.date()/os.date("%Y年%m月%d日") .. " " .. translate(os.date("%A")) .. " " .. os.date("%X")/g' package/lean/autocore/files/arm/index.htm
 
 # cpufreq
 sed -i 's/LUCI_DEPENDS.*/LUCI_DEPENDS:=\@\(arm\|\|aarch64\)/g' feeds/luci/applications/luci-app-cpufreq/Makefile
