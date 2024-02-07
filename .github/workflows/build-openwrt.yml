@@ -58,7 +58,9 @@ jobs:
       CONFIG_FILE: lede/Build-arm.config
       DIY_P1_SH: lede/diy-part1.sh
       DIY_P2_SH: lede/diy-arm.sh
-      UPLOAD_RELEASE: true
+      UPLOAD_BIN_DIR: false
+      UPLOAD_FIRMWARE: false
+      UPLOAD_RELEASE: false
 
     steps:
     - name: Checkout
@@ -152,17 +154,36 @@ jobs:
       if: (!cancelled())
       run: df -hT
 
+    - name: Prepare artifact
+      run: |
+        cd ./openwrt/bin
+        mkdir -p ./firmware
+        mkdir -p ./package
+        rm -rf $(find ../bin/targets/ -name "packages" -o -name "*.buildinfo" -o -name "sha256sums" -o -name "*.manifest")
+        cp -rf $(find ../bin/targets/ -type f) ./firmware/
+        cp -rf $(find ../bin/packages/ -type f -name "*.ipk") ./package/
+        cd ./package
+        tar -zcvf IPK.tar.gz *
+        mv -f IPK.tar.gz ../
+
+    - name: Deliver package
+      uses: actions/upload-artifact@v3
+      with:
+        name: ARMv8_IPK ${{ env.FILE_DATE }}
+        path: ./openwrt/bin/package/
+
+    - name: Deliver firmware
+      uses: actions/upload-artifact@v3
+      with:
+        name: ARMv8_firmware ${{ env.FILE_DATE }}
+        path: ./openwrt/bin/firmware/
+
     - name: Organize files
       id: organize
-      if: steps.compile.outputs.status == 'success'
       run: |
-        cd $GITHUB_WORKSPACE/openwrt/bin/packages
-        tar -zcvf Packages.tar.gz ./*
-        cp Packages.tar.gz $GITHUB_WORKSPACE/openwrt/bin/targets/*/*
-        cd $GITHUB_WORKSPACE/openwrt/bin/targets/*/*
-        rm -rf Packages.tar.gz feeds.buildinfo openwrt-armvirt-64-generic-kernel.bin openwrt-armvirt-64-generic.manifest sha256sums version.buildinfo
+        cd openwrt
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "status=success" >> $GITHUB_OUTPUT
+        echo "{status}={success}" >> $GITHUB_OUTPUT
 
     - name: Package Armvirt as OpenWrt
       uses: ophub/flippy-openwrt-actions@main
@@ -173,12 +194,12 @@ jobs:
         KERNEL_VERSION_NAME: 5.15.85_6.1.1
         WHOAMI: skywrt
 
-    - name: Organize
+    - name: copy update files
       run: |
-        cd /opt/openwrt_packit/output
-        rm -rf openwrt-armvirt-64-generic-rootfs.tar.gz *.sha
-        echo "PACKAGED_OUTPUTPATH=$PWD" >> $GITHUB_ENV
-        echo "status=success" >> $GITHUB_OUTPUT
+        cd /opt/openwrt_packit
+        cp ./files/update*.sh ./output/
+        rm -rf $(find ./output/ -name "sha256sums" -o -name "*.gz.sha" -o -name "*.tar.gz")
+        echo "{status}={success}" >> $GITHUB_OUTPUT
 
     - name: Upload OpenWrt Firmware to Release
       if: env.PACKAGED_STATUS == 'success' && env.UPLOAD_RELEASE == 'true'
@@ -186,11 +207,10 @@ jobs:
       with:
         name: ARMv8-lede ${{ env.DATE }}
         tag: ARMv8-lede
+        artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
         allowUpdates: true
         removeArtifacts: true
-        commit: main
         token: ${{ secrets.GITHUB_TOKEN }}
-        artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
         body: |
           * 这是 ARMv8 平台精简固件
           * Default IP: 192.168.1.1
@@ -313,14 +333,24 @@ jobs:
       if: (!cancelled())
       run: df -hT
 
+    - name: Prepare artifact
+      run: |
+        cd ./openwrt/bin
+        mkdir -p ./firmware
+        rm -rf $(find ../bin/targets/ -name "packages" -o -name "*.buildinfo" -o -name "sha256sums" -o -name "*.manifest")
+
+    - name: Deliver firmware
+      uses: actions/upload-artifact@v3
+      with:
+        name: x86_firmware ${{ env.FILE_DATE }}
+        path: ./openwrt/bin/firmware/
+
     - name: Organize files
       id: organize
-      if: steps.compile.outputs.status == 'success'
       run: |
-        cd openwrt/bin/targets/*/*
-        rm -rf packages *.buildinfo openwrt-x86-64-generic-kernel.bin openwrt-x86-64-generic-squashfs-rootfs.img.gz openwrt-x86-64-generic.manifest profiles.json sha256sums
+        cd openwrt/bin/firmware/
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "status=success" >> $GITHUB_OUTPUT
+        echo "{status}={success}" >> $GITHUB_OUTPUT
 
     - name: Upload OpenWrt Firmware to Release
       id: release
@@ -328,11 +358,10 @@ jobs:
       with:
         name: x86-lede ${{ env.PRODUCT_NAME }}${{ env.DATE }}
         tag: x86-lede
+        artifacts: ${{ env.FIRMWARE }}/*
         allowUpdates: true
         removeArtifacts: true
-        commit: main
         token: ${{ secrets.GITHUB_TOKEN }}
-        artifacts: ${{ env.FIRMWARE }}/*
         body: |
           * 这是 x86 平台精简固件
           * Default IP: 192.168.1.1
@@ -455,14 +484,24 @@ jobs:
       if: (!cancelled())
       run: df -hT
 
+    - name: Prepare artifact
+      run: |
+        cd ./openwrt/bin
+        mkdir -p ./firmware
+        rm -rf $(find ../bin/targets/ -name "packages" -o -name "*.buildinfo" -o -name "sha256sums" -o -name "*.manifest")
+
+    - name: Deliver firmware
+      uses: actions/upload-artifact@v3
+      with:
+        name: x86_firmware ${{ env.FILE_DATE }}
+        path: ./openwrt/bin/firmware/
+
     - name: Organize files
       id: organize
-      if: steps.compile.outputs.status == 'success'
       run: |
-        cd openwrt/bin/targets/*/*
-        rm -rf packages *.buildinfo openwrt-x86-64-generic-kernel.bin openwrt-x86-64-generic-squashfs-rootfs.img.gz openwrt-x86-64-generic.manifest profiles.json sha256sums
+        cd openwrt/bin/firmware/
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "status=success" >> $GITHUB_OUTPUT
+        echo "{status}={success}" >> $GITHUB_OUTPUT
 
     - name: Upload OpenWrt Firmware to Release
       id: release
@@ -470,11 +509,10 @@ jobs:
       with:
         name: x86-immortalwrt ${{ env.PRODUCT_NAME }}${{ env.DATE }}
         tag: x86-immortalwrt
+        artifacts: ${{ env.FIRMWARE }}/*
         allowUpdates: true
         removeArtifacts: true
-        commit: main
         token: ${{ secrets.GITHUB_TOKEN }}
-        artifacts: ${{ env.FIRMWARE }}/*
         body: |
           * 这是 x86-immortalwrt 精简固件
           * Default IP: 192.168.1.1
@@ -597,14 +635,24 @@ jobs:
       if: (!cancelled())
       run: df -hT
 
+    - name: Prepare artifact
+      run: |
+        cd ./openwrt/bin
+        mkdir -p ./firmware
+        rm -rf $(find ../bin/targets/ -name "packages" -o -name "*.buildinfo" -o -name "sha256sums" -o -name "*.manifest")
+
+    - name: Deliver firmware
+      uses: actions/upload-artifact@v3
+      with:
+        name: x86_firmware ${{ env.FILE_DATE }}
+        path: ./openwrt/bin/firmware/
+
     - name: Organize files
       id: organize
-      if: steps.compile.outputs.status == 'success'
       run: |
-        cd openwrt/bin/targets/*/*
-        rm -rf packages *.buildinfo openwrt-x86-64-generic-kernel.bin openwrt-x86-64-generic-squashfs-rootfs.img.gz openwrt-x86-64-generic.manifest profiles.json sha256sums
+        cd openwrt/bin/firmware/
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "status=success" >> $GITHUB_OUTPUT
+        echo "{status}={success}" >> $GITHUB_OUTPUT
 
     - name: Upload OpenWrt Firmware to Release
       id: release
@@ -612,11 +660,10 @@ jobs:
       with:
         name: x86-Original ${{ env.PRODUCT_NAME }}${{ env.DATE }}
         tag: x86-Original
+        artifacts: ${{ env.FIRMWARE }}/*
         allowUpdates: true
         removeArtifacts: true
-        commit: main
         token: ${{ secrets.GITHUB_TOKEN }}
-        artifacts: ${{ env.FIRMWARE }}/*
         body: |
           * 这是 x86-original 精简固件
           * Default IP: 192.168.1.1
