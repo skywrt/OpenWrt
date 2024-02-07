@@ -363,7 +363,7 @@ jobs:
     env:
       REPO_URL: https://github.com/immortalwrt/immortalwrt
       REPO_BRANCH: openwrt-23.05
-      CONFIG_FILE: immortalwrt/Build-x86d.config
+      CONFIG_FILE: immortalwrt/Build-x86.config
       DIY_P1_SH: immortalwrt/diy-part1.sh
       DIY_P2_SH: immortalwrt/diy-x86.sh
       UPLOAD_BIN_DIR: false
