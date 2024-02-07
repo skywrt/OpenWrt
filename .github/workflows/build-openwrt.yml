@@ -158,19 +158,7 @@ jobs:
       run: |
         cd ./openwrt/bin
         mkdir -p ./firmware
-        mkdir -p ./package
         rm -rf $(find ../bin/targets/ -name "packages" -o -name "*.buildinfo" -o -name "sha256sums" -o -name "*.manifest")
-        cp -rf $(find ../bin/targets/ -type f) ./firmware/
-        cp -rf $(find ../bin/packages/ -type f -name "*.ipk") ./package/
-        cd ./package
-        tar -zcvf IPK.tar.gz *
-        mv -f IPK.tar.gz ../
-
-    - name: Deliver package
-      uses: actions/upload-artifact@v3
-      with:
-        name: ARMv8_IPK ${{ env.FILE_DATE }}
-        path: ./openwrt/bin/package/
 
     - name: Deliver firmware
       uses: actions/upload-artifact@v3
