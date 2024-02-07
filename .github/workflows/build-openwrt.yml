@@ -181,6 +181,7 @@ jobs:
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload OpenWrt Firmware to Release
+      id: release
       uses: ncipollo/release-action@v1
       with:
         name: ARMv8-lede ${{ env.DATE }}
@@ -188,6 +189,7 @@ jobs:
         artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
         allowUpdates: true
         removeArtifacts: true
+        commit: main
         token: ${{ secrets.GITHUB_TOKEN }}
         body: |
           * 这是 ARMv8 平台精简固件
@@ -321,6 +323,7 @@ jobs:
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload OpenWrt Firmware to Release
+      id: release
       uses: ncipollo/release-action@v1
       with:
         name: x86-lede ${{ env.PRODUCT_NAME }}${{ env.DATE }}
@@ -328,6 +331,7 @@ jobs:
         artifacts: ${{ env.FIRMWARE }}/*
         allowUpdates: true
         removeArtifacts: true
+        commit: main
         token: ${{ secrets.GITHUB_TOKEN }}
         body: |
           * 这是 x86 平台精简固件
@@ -461,6 +465,7 @@ jobs:
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload OpenWrt Firmware to Release
+      id: release
       uses: ncipollo/release-action@v1
       with:
         name: x86-immortalwrt ${{ env.PRODUCT_NAME }}${{ env.DATE }}
@@ -468,6 +473,7 @@ jobs:
         artifacts: ${{ env.FIRMWARE }}/*
         allowUpdates: true
         removeArtifacts: true
+        commit: main
         token: ${{ secrets.GITHUB_TOKEN }}
         body: |
           * 这是 x86-immortalwrt 精简固件
@@ -601,6 +607,7 @@ jobs:
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload OpenWrt Firmware to Release
+      id: release
       uses: ncipollo/release-action@v1
       with:
         name: x86-Original ${{ env.PRODUCT_NAME }}${{ env.DATE }}
@@ -608,6 +615,7 @@ jobs:
         artifacts: ${{ env.FIRMWARE }}/*
         allowUpdates: true
         removeArtifacts: true
+        commit: main
         token: ${{ secrets.GITHUB_TOKEN }}
         body: |
           * 这是 x86-original 精简固件
