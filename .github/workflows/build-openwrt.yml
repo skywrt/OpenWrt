@@ -9,7 +9,7 @@
 # Description: Source code update checker
 #
 
-name: Build OpenWrt2
+name: Build OpenWrt
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
