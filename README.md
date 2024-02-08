@@ -6,19 +6,6 @@
 * #### 默认IP：192.168.1.1
 * #### 默认密码:password
 #
-### 写入EMMC:
-* **cd /root**
-* **./install-to-emmc**
-#
-### 升级：
-* **把 update-amlogic-openwrt.sh 及 img镜像上传至 /mnt/mmcblk2p4**
-
-* **cd /mnt/mmcblk2p4**
-
-* **chmod 755 update-amlogic-openwrt.sh**
-
-* **./update-amlogic-openwrt.sh xxxxxx.img**
-#
 # 感谢
 - flippy
 - P3TERX
