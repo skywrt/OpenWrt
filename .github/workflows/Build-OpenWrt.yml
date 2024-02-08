@@ -9,7 +9,7 @@
 # Description: Source code update checker
 #
 
-name: 编译固件
+name: Build OpenWrt
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -356,7 +356,7 @@ jobs:
         removeArtifacts: true
         token: ${{ secrets.GITHUB_TOKEN }}
         body: |
-          * 这是 x86 平台精简固件
+          * 这是 x86-lede 平台精简固件
           * Default IP: 192.168.1.1
           * Default username: root
           * Default password: password
