@@ -178,7 +178,7 @@ jobs:
       uses: ophub/flippy-openwrt-actions@main
       env:
         OPENWRT_ARMVIRT: openwrt/bin/targets/*/*/*.tar.gz
-        PACKAGE_SOC: s905d
+        PACKAGE_SOC: all
         KERNEL_AUTO_LATEST:  true
         KERNEL_VERSION_NAME: 5.15.85_6.1.1
         WHOAMI: skywrt
@@ -187,7 +187,7 @@ jobs:
       run: |
         cd /opt/openwrt_packit
         cp ./files/update*.sh ./output/
-        rm -rf $(find ./output/ -name "sha256sums" -o -name "*.gz.sha" -o -name "*.tar.gz")
+        rm -rf $(find ./output/ -name "sha256sums" -o -name "*.gz.sha" -o -name "*.tar.gz" -o -name "*.openwrt.sh")
         cd $GITHUB_WORKSPACE/openwrt/bin
         echo "{status}={success}" >> $GITHUB_OUTPUT
 
