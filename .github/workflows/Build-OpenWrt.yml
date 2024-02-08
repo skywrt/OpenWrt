@@ -188,7 +188,7 @@ jobs:
       run: |
         MSG="
         编译时间：${{ env.DATE }}
-        ARMv8-lede 编译完成 ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY ${Emoji[$[$RANDOM % ${#Emoji[@]}]]}
+        ARMv8-lede 编译完成
         "
         curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
@@ -328,7 +328,7 @@ jobs:
       run: |
         MSG="
         编译时间：${{ env.DATE }}
-        x86-lede 编译完成 ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY ${Emoji[$[$RANDOM % ${#Emoji[@]}]]}
+        x86-lede 编译完成
         "
         curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
@@ -468,7 +468,7 @@ jobs:
       run: |
         MSG="
         编译时间：${{ env.DATE }}
-        x86-immortalwrt 编译完成 ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY ${Emoji[$[$RANDOM % ${#Emoji[@]}]]}
+        x86-immortalwrt 编译完成
         "
         curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
@@ -608,7 +608,7 @@ jobs:
       run: |
         MSG="
         编译时间：${{ env.DATE }}
-        x86 original编译完成 ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY ${Emoji[$[$RANDOM % ${#Emoji[@]}]]}
+        x86 original编译完成
         "
         curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
