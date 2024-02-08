@@ -9,7 +9,7 @@
 # Description: Source code update checker
 #
 
-name: Build
+name: Test
 
 on:
   workflow_dispatch:
