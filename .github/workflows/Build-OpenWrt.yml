@@ -199,9 +199,8 @@ jobs:
     - name: Telegram notification
       run: |
         MSG="
-        ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY ${Emoji[$[$RANDOM % ${#Emoji[@]}]]}
         编译时间：${{ env.DATE }}
-        ARMv8-lede 编译完成
+        ARMv8-lede 编译完成 ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY ${Emoji[$[$RANDOM % ${#Emoji[@]}]]}
         "
         curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
@@ -340,9 +339,8 @@ jobs:
     - name: Telegram notification
       run: |
         MSG="
-        ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY ${Emoji[$[$RANDOM % ${#Emoji[@]}]]}
         编译时间：${{ env.DATE }}
-        x86-lede 编译完成
+        x86-lede 编译完成 ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY ${Emoji[$[$RANDOM % ${#Emoji[@]}]]}
         "
         curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
@@ -481,9 +479,8 @@ jobs:
     - name: Telegram notification
       run: |
         MSG="
-        ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY ${Emoji[$[$RANDOM % ${#Emoji[@]}]]}
         编译时间：${{ env.DATE }}
-        x86-immortalwrt 编译完成
+        x86-immortalwrt 编译完成 ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY ${Emoji[$[$RANDOM % ${#Emoji[@]}]]}
         "
         curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
@@ -622,9 +619,8 @@ jobs:
     - name: Telegram notification
       run: |
         MSG="
-        ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY ${Emoji[$[$RANDOM % ${#Emoji[@]}]]}
         编译时间：${{ env.DATE }}
-        x86 original编译完成
+        x86 original编译完成 ${Emoji[$[$RANDOM % ${#Emoji[@]}]]} $GITHUB_REPOSITORY ${Emoji[$[$RANDOM % ${#Emoji[@]}]]}
         "
         curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
