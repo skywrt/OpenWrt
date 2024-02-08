@@ -444,7 +444,7 @@ jobs:
       if: steps.compile.outputs.status == 'success'
       run: |
         cd openwrt/bin/targets/*/*
-        rm -rf packages config.buildinfo feeds.buildinfo version.buildinfo *.bin *-rootfs.img.gz *.manifest sha256sums
+        rm -rf packages config.buildinfo feeds.buildinfo version.buildinfo *.bin *-rootfs.img.gz *-rootfs.tar.gz *.manifest profiles.json sha256sums
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
 
