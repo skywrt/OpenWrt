@@ -162,17 +162,17 @@ jobs:
         cp -rf $(find ../bin/targets/ -type f) ./firmware/
 
     - name: Deliver firmware
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ARMv8_firmware ${{ env.FILE_DATE }}
         path: ./openwrt/bin/firmware/
 
-    - name: Organize files
-      id: organize
-      run: |
-        cd openwrt
-        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "{status}={success}" >> $GITHUB_OUTPUT
+#    - name: Organize files
+#      id: organize
+#      run: |
+#        cd openwrt
+#        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+#        echo "{status}={success}" >> $GITHUB_OUTPUT
 
     - name: Package Armvirt as OpenWrt
       uses: ophub/flippy-openwrt-actions@main
@@ -183,11 +183,20 @@ jobs:
         KERNEL_VERSION_NAME: 5.15.85_6.1.1
         WHOAMI: skywrt
 
-    - name: copy update files
+#    - name: copy update files
+#      run: |
+#        cd /opt/openwrt_packit
+#        cp ./files/update*.sh ./output/
+#        rm -rf $(find ./output/ -name "sha256sums" -o -name "*.gz.sha" -o -name "*.tar.gz")
+#        echo "{status}={success}" >> $GITHUB_OUTPUT
+
+    - name: Organize files
+      id: organize
       run: |
         cd /opt/openwrt_packit
         cp ./files/update*.sh ./output/
         rm -rf $(find ./output/ -name "sha256sums" -o -name "*.gz.sha" -o -name "*.tar.gz")
+        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "{status}={success}" >> $GITHUB_OUTPUT
 
     - name: Upload OpenWrt Firmware to Release
@@ -196,7 +205,7 @@ jobs:
       with:
         name: ARMv8-lede ${{ env.DATE }}
         tag: ARMv8-lede
-        artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
+        artifacts: ${{ env.FIRMWARE }}/*
         allowUpdates: true
         removeArtifacts: true
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -332,7 +341,7 @@ jobs:
         cp -rf $(find ../bin/targets/ -type f) ./firmware/
 
     - name: Deliver firmware
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: x86_firmware ${{ env.FILE_DATE }}
         path: ./openwrt/bin/firmware/
@@ -486,7 +495,7 @@ jobs:
         cp -rf $(find ../bin/targets/ -type f) ./firmware/
 
     - name: Deliver firmware
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: x86_firmware ${{ env.FILE_DATE }}
         path: ./openwrt/bin/firmware/
@@ -640,7 +649,7 @@ jobs:
         cp -rf $(find ../bin/targets/ -type f) ./firmware/
 
     - name: Deliver firmware
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: x86_firmware ${{ env.FILE_DATE }}
         path: ./openwrt/bin/firmware/
