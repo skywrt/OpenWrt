@@ -350,6 +350,7 @@ jobs:
       id: organize
       run: |
         cd openwrt/bin/firmware/
+        rm -rf openwrt-x86-64-generic-kernel.bin openwrt-x86-64-generic-squashfs-rootfs.img.gz
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "{status}={success}" >> $GITHUB_OUTPUT
 
@@ -504,6 +505,7 @@ jobs:
       id: organize
       run: |
         cd openwrt/bin/firmware/
+        rm -rf immortalwrt-x86-64-generic-kernel.bin immortalwrt-x86-64-generic-rootfs.tar.gz immortalwrt-x86-64-generic-squashfs-rootfs.img.gz profiles.json
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "{status}={success}" >> $GITHUB_OUTPUT
 
@@ -658,6 +660,7 @@ jobs:
       id: organize
       run: |
         cd openwrt/bin/firmware/
+        rm -rf openwrt-x86-64-generic-kernel.bin openwrt-x86-64-generic-squashfs-rootfs.img.gz
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "{status}={success}" >> $GITHUB_OUTPUT
 
