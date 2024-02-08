@@ -26,7 +26,7 @@ env:
   DIY_P2_SH: original/diy-x86.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: false
-  UPLOAD_RELEASE: false
+  UPLOAD_RELEASE: true
 
 jobs:
   check:
